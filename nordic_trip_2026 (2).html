@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>北歐三城之旅 2026 🏃</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0d2137;
+    --steel: #3a7ca5;
+    --steel-light: #d0e8f5;
+    --gold: #e8a020;
+    --gold-light: #fef3d8;
+    --green: #2e7d5e;
+    --green-light: #e1f5ee;
+    --purple: #6b4fc8;
+    --purple-light: #eeedfe;
+    --red: #c0392b;
+    --text: #1a2e3d;
+    --muted: #5a7a92;
+    --card: #ffffff;
+    --border: #d4e8f0;
+    --bg: #eef6fb;
+    --surface: #f5fafd;
+    --font-main: 'DM Sans', 'Noto Sans TC', sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --navy: #c8e4f5;
+      --steel: #7db8d4;
+      --steel-light: #0f2a3d;
+      --gold: #e8b84b;
+      --gold-light: #2e1f00;
+      --green: #5dcaa5;
+      --green-light: #04241a;
+      --purple: #a389e0;
+      --purple-light: #1e1540;
+      --text: #ddeef7;
+      --muted: #7aafc9;
+      --card: #0f1e2a;
+      --border: #1a3347;
+      --bg: #08131c;
+      --surface: #0d1e2b;
+    }
+  }
+
+  html { font-size: 16px; }
+  body {
+    font-family: var(--font-main);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--navy);
+    color: #fff;
+    padding: 28px 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    .app-header { background: #071018; color: var(--text); }
+  }
+  .header-top { max-width: 720px; margin: 0 auto; }
+  .trip-label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; opacity: .65; margin-bottom: 4px; }
+  .trip-title { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
+  .trip-meta { font-size: 13px; opacity: .7; margin-bottom: 16px; }
+
+  .route-bar {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    font-size: 12px; opacity: .8; margin-bottom: 16px;
+  }
+  .route-city { font-weight: 500; opacity: 1; }
+  .route-arr { opacity: .5; }
+
+  .tab-row {
+    max-width: 720px; margin: 0 auto;
+    display: flex; border-top: 1px solid rgba(255,255,255,.12); overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tab-row::-webkit-scrollbar { display: none; }
+  @media (prefers-color-scheme: dark) {
+    .tab-row { border-top-color: var(--border); }
+  }
+  .tab-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+    padding: 11px 16px 10px;
+    font-size: 13px; font-weight: 500;
+    color: rgba(255,255,255,.55);
+    background: none; border: none; border-bottom: 2px solid transparent;
+    cursor: pointer; white-space: nowrap; transition: color .15s, border-color .15s;
+    font-family: var(--font-main);
+  }
+  .tab-btn:hover { color: rgba(255,255,255,.85); }
+  .tab-btn.active { color: #fff; border-bottom-color: var(--gold); }
+  @media (prefers-color-scheme: dark) {
+    .tab-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent; color: var(--muted); }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--gold); }
+  }
+
+  /* ── LAYOUT ── */
+  .content { max-width: 720px; margin: 0 auto; padding: 20px 16px 48px; }
+  .section { display: none; animation: fadeIn .18s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* ── CITY HEADER ── */
+  .city-hdr {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 18px; margin-bottom: 16px;
+  }
+  .city-flag { font-size: 32px; line-height: 1; }
+  .city-hdr-body { flex: 1; }
+  .city-hdr-body h2 { font-size: 20px; font-weight: 700; }
+  .city-hdr-body p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .badge {
+    font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+    white-space: nowrap;
+  }
+  .badge-race { background: var(--gold-light); color: var(--gold); }
+  .badge-transit { background: var(--steel-light); color: var(--steel); }
+  .badge-end { background: var(--purple-light); color: var(--purple); }
+
+  /* ── ALERT BOX ── */
+  .alert {
+    border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;
+    font-size: 13px; line-height: 1.6;
+  }
+  .alert-warn { background: var(--gold-light); border-left: 3px solid var(--gold); color: var(--text); }
+  .alert-info { background: var(--steel-light); border-left: 3px solid var(--steel); color: var(--text); }
+  .alert-green { background: var(--green-light); border-left: 3px solid var(--green); color: var(--text); }
+  .alert strong { font-weight: 600; }
+
+  /* ── SECTION LABEL ── */
+  .sec-label {
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    letter-spacing: .09em; text-transform: uppercase;
+    margin: 20px 0 10px;
+  }
+
+  /* ── TRANSPORT CARD ── */
+  .transport-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px; margin-bottom: 10px;
+  }
+  .t-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: var(--steel-light); display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; font-size: 20px;
+  }
+  .t-body { flex: 1; }
+  .t-route { font-size: 14px; font-weight: 600; }
+  .t-detail { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+  .t-meta { text-align: right; flex-shrink: 0; }
+  .t-time { font-size: 14px; font-weight: 600; }
+  .t-date { font-size: 11px; color: var(--muted); }
+  .t-link {
+    display: inline-block; margin-top: 6px;
+    font-size: 11px; font-weight: 600; padding: 4px 10px;
+    border-radius: 6px; background: var(--steel-light); color: var(--steel);
+    text-decoration: none; transition: opacity .15s;
+  }
+  .t-link:hover { opacity: .75; }
+
+  /* ── DAY CARD ── */
+  .day-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 10px; overflow: hidden;
+  }
+  .day-hdr {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    padding: 13px 16px; display: flex; align-items: center;
+    gap: 12px; cursor: pointer; user-select: none;
+    transition: background .12s;
+  }
+  .day-hdr:hover { background: var(--surface); }
+  .day-num {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--surface); border: 1.5px solid var(--border);
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: var(--steel);
+  }
+  .day-num.race { background: var(--gold-light); border-color: var(--gold); color: var(--gold); }
+  .day-num.fly { background: var(--purple-light); border-color: var(--purple); color: var(--purple); }
+  .day-tb { flex: 1; }
+  .day-title { font-size: 14px; font-weight: 600; }
+  .day-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .day-chev { color: var(--muted); font-size: 18px; transition: transform .2s; line-height: 1; }
+  .day-card.open .day-chev { transform: rotate(180deg); }
+  .day-items { padding: 4px 16px 14px; display: none; }
+  .day-card.open .day-items { display: block; }
+
+  /* ── ITINERARY ITEMS ── */
+  .item { display: flex; gap: 12px; margin-bottom: 12px; }
+  .item:last-child { margin-bottom: 0; }
+  .idc { display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
+  .idot { width: 9px; height: 9px; border-radius: 50%; background: var(--steel); flex-shrink: 0; }
+  .idot.gold { background: var(--gold); }
+  .iline { width: 1.5px; background: var(--border); flex: 1; margin-top: 4px; min-height: 14px; }
+  .ibody { flex: 1; padding-top: 1px; }
+  .iname { font-size: 13px; font-weight: 600; }
+  .idesc { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.55; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .itag {
+    font-size: 10px; font-weight: 600; padding: 2px 8px;
+    border-radius: 10px; text-decoration: none;
+  }
+  .tf { background: var(--green-light); color: var(--green); }
+  .tm { background: var(--purple-light); color: var(--purple); }
+  .tfo { background: #faece7; color: #993c1d; }
+  @media (prefers-color-scheme: dark) { .tfo { background: #3a1206; color: #f0997b; } }
+  .tn { background: var(--green-light); color: var(--green); }
+  .tr { background: var(--gold-light); color: var(--gold); }
+  .tlink {
+    background: var(--steel-light); color: var(--steel);
+    cursor: pointer;
+  }
+  .tlink:hover { opacity: .75; }
+
+  /* ── BOOKING CARDS ── */
+  .booking-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px; margin-bottom: 10px;
+  }
+  .booking-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px;
+    text-decoration: none; color: var(--text);
+    display: flex; flex-direction: column; gap: 6px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .booking-card:hover { border-color: var(--steel); box-shadow: 0 2px 12px rgba(58,124,165,.1); }
+  .bc-top { display: flex; align-items: center; gap: 10px; }
+  .bc-icon { font-size: 22px; line-height: 1; }
+  .bc-name { font-size: 14px; font-weight: 600; }
+  .bc-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .bc-action {
+    display: inline-block; margin-top: 4px;
+    font-size: 11px; font-weight: 600; padding: 4px 10px;
+    border-radius: 6px; background: var(--steel-light); color: var(--steel);
+  }
+  .bc-urgent { border-color: var(--gold); }
+  .bc-urgent .bc-action { background: var(--gold-light); color: var(--gold); }
+
+  /* ── CHECKLIST ── */
+  .checklist { list-style: none; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist input[type="checkbox"] {
+    width: 17px; height: 17px; margin-top: 2px; flex-shrink: 0;
+    accent-color: var(--steel); cursor: pointer;
+  }
+  .checklist label { cursor: pointer; line-height: 1.55; }
+  .checklist label span { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .cl-done label { text-decoration: line-through; color: var(--muted); }
+
+  .check-group-title {
+    font-size: 12px; font-weight: 700; color: var(--muted);
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: 16px 0 4px; border-top: 1px solid var(--border); margin-top: 4px;
+  }
+  .check-group-title:first-child { border-top: none; padding-top: 0; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap { margin-bottom: 18px; }
+  .progress-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--steel); border-radius: 3px; transition: width .3s; }
+
+  /* ── WEATHER ── */
+  .weather-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    margin-bottom: 14px;
+  }
+  .weather-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; text-align: center;
+  }
+  .weather-city { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .weather-icon { font-size: 26px; margin: 6px 0; }
+  .weather-temp { font-size: 16px; font-weight: 700; }
+  .weather-desc { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* ── SCROLL TOP ── */
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 20px;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--navy); color: #fff;
+    border: none; cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,.2);
+    opacity: 0; transition: opacity .2s;
+    z-index: 50;
+  }
+  .scroll-top.show { opacity: 1; }
+  @media (prefers-color-scheme: dark) { .scroll-top { background: var(--steel); } }
+
+  @media (max-width: 480px) {
+    .city-hdr { padding: 12px 14px; }
+    .booking-grid { grid-template-columns: 1fr 1fr; }
+    .weather-row { grid-template-columns: 1fr 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-top">
+    <div class="trip-label">2026 北歐旅行</div>
+    <div class="trip-title">半馬 × 北歐三城之旅 🏃</div>
+    <div class="trip-meta">9/10（四）奧斯陸出發 → 9/21（日）哥本哈根回程 · 12 天</div>
+    <div class="route-bar">
+      <span class="route-city">✈️ 出發</span><span class="route-arr">→</span>
+      <span class="route-city">🇳🇴 奧斯陸</span><span class="route-arr">→</span>
+      <span class="route-city">🇸🇪 斯德哥爾摩</span><span class="route-arr">→</span>
+      <span class="route-city">🇩🇰 哥本哈根</span><span class="route-arr">→</span>
+      <span class="route-city">🇫🇮 赫爾辛基 轉機</span><span class="route-arr">→</span>
+      <span class="route-city">🗼 東京 / 🇹🇼 台灣</span>
+    </div>
+  </div>
+  <div class="tab-row">
+    <button class="tab-btn active" data-tab="osl">🇳🇴 奧斯陸</button>
+    <button class="tab-btn" data-tab="sto">🇸🇪 斯德哥爾摩</button>
+    <button class="tab-btn" data-tab="cph">🇩🇰 哥本哈根</button>
+    <button class="tab-btn" data-tab="book">🎟 預約清單</button>
+    <button class="tab-btn" data-tab="prep">✅ 準備清單</button>
+  </div>
+</header>
+
+<main class="content">
+
+  <!-- ══ OSLO ══ -->
+  <div class="section active" id="sec-osl">
+    <div class="city-hdr">
+      <div class="city-flag">🇳🇴</div>
+      <div class="city-hdr-body"><h2>奧斯陸</h2><p>9/10 下午 2:00 抵達 → 9/16 早上離開 · 6 晚</p></div>
+      <span class="badge badge-race">🏃 比賽城市</span>
+    </div>
+    <div class="alert alert-warn">
+      <strong>⚠️ 住宿缺口：</strong>你們已訂 9/10–9/13（3晚）。比賽後還需要補訂 <strong>9/13、9/14、9/15</strong> 共 3 晚！比賽週末旅館很搶，請盡快處理。
+    </div>
+
+    <div class="sec-label">城市間交通</div>
+    <div class="transport-card">
+      <div class="t-icon">✈️</div>
+      <div class="t-body">
+        <div class="t-route">出發地 → 奧斯陸 Oslo Lufthavn（OSL）</div>
+        <div class="t-detail">抵達後搭 Flytoget 機場快線，約 20 分鐘到市中心 Oslo S 中央車站</div>
+        <a class="t-link" href="https://flytoget.no" target="_blank">flytoget.no →</a>
+      </div>
+      <div class="t-meta"><div class="t-time">9/10</div><div class="t-date">14:00 落地</div></div>
+    </div>
+
+    <div class="sec-label">行程</div>
+
+    <div class="day-card open" id="d_osl1">
+      <div class="day-hdr" onclick="td('d_osl1')">
+        <div class="day-num">9/10</div>
+        <div class="day-tb"><div class="day-title">抵達 · 市中心初探</div><div class="day-sub">下午落地，輕鬆放鬆</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Flytoget 機場快線入城</div><div class="idesc">Oslo Airport → Oslo S 約 20 分鐘，單程 NOK 198</div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">安頓入住 · 稍作休息</div><div class="idesc">放行李，確認比賽號碼布領取時間</div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Aker Brygge 海濱步道</div><div class="idesc">峽灣景色、餐廳林立，隨意漫步感受奧斯陸氣氛</div><div class="tags"><span class="itag tf">免費</span></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div></div><div class="ibody"><div class="iname">奧斯陸歌劇院屋頂</div><div class="idesc">白色大理石斜屋頂可直接走上去，日落俯瞰峽灣最美，完全免費</div><div class="tags"><span class="itag tf">免費</span></div></div></div>
+      </div>
+    </div>
+
+    <div class="day-card" id="d_osl2">
+      <div class="day-hdr" onclick="td('d_osl2')">
+        <div class="day-num">9/11</div>
+        <div class="day-tb"><div class="day-title">Bygdøy 博物館半島</div><div class="day-sub">搭 30 號渡輪前往，全天安排</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">挪威民俗博物館 Norsk Folkemuseum</div><div class="idesc">150+ 棟古建築、1200 年木教堂。建議預留 2–3 小時</div><div class="tags"><span class="itag tm">博物館</span><a class="itag tlink" href="https://norskfolkemuseum.no" target="_blank">norskfolkemuseum.no →</a></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div></div><div class="ibody"><div class="iname">法蘭號極地船博物館 Frammuseum</div><div class="idesc">可登上真實極地探險船，超沉浸式體驗。門票 NOK 220</div><div class="tags"><span class="itag tm">博物館</span><a class="itag tlink" href="https://frammuseum.no" target="_blank">frammuseum.no →</a></div></div></div>
+      </div>
+    </div>
+
+    <div class="day-card" id="d_osl3">
+      <div class="day-hdr" onclick="td('d_osl3')">
+        <div class="day-num race">9/12</div>
+        <div class="day-tb"><div class="day-title">🏃 比賽日！DNB Oslo Half Marathon</div><div class="day-sub">起跑 09:00 · Rådhusplassen 市政廳廣場</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot gold"></div><div class="iline"></div></div><div class="ibody"><div class="iname">領號碼布 Expo</div><div class="idesc">9/10–11 可提前領，或比賽當天 07:00–08:00 領。在 Rådhusplassen 廣場</div><div class="tags"><span class="itag tr">賽前必辦</span><a class="itag tlink" href="https://oslomaraton.no" target="_blank">oslomaraton.no →</a></div></div></div>
+        <div class="item"><div class="idc"><div class="idot gold"></div><div class="iline"></div></div><div class="ibody"><div class="iname">半馬起跑！21.0975 km</div><div class="idesc">沿奧斯陸峽灣海岸線，路線平坦風景超美。關門時間 3 小時</div><div class="tags"><span class="itag tr">DNB Oslo Half Marathon</span></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div></div><div class="ibody"><div class="iname">賽後：Vigeland 雕塑公園慶功散步</div><div class="idesc">200+ 座雕塑，全天開放，完全免費。從市中心步行或搭 12 號電車</div><div class="tags"><span class="itag tf">免費</span></div></div></div>
+      </div>
+    </div>
+
+    <div class="day-card" id="d_osl4">
+      <div class="day-hdr" onclick="td('d_osl4')">
+        <div class="day-num">9/13</div>
+        <div class="day-tb"><div class="day-title">藝術日：孟克 + 國家博物館 + Mathallen</div><div class="day-sub">現有住宿 check-out，補訂後三晚！</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">孟克美術館 Munch</div><div class="idesc">《吶喊》真跡在此。週三至週五開至 21:00，可避開人潮。門票 NOK 200</div><div class="tags"><span class="itag tm">博物館</span><a class="itag tlink" href="https://www.munch.no" target="_blank">munch.no →</a></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">國家博物館 Nasjonalmuseet</div><div class="idesc">北歐最大博物館，Picasso、Monet 都收藏於此。門票 NOK 200</div><div class="tags"><span class="itag tm">博物館</span><a class="itag tlink" href="https://nasjonalmuseet.no/en" target="_blank">nasjonalmuseet.no →</a></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div></div><div class="ibody"><div class="iname">Mathallen 美食市場</div><div class="idesc">在地食材 × 國際小吃，週一公休，晚餐首選</div><div class="tags"><span class="itag tfo">美食</span><a class="itag tlink" href="https://mathallenoslo.no" target="_blank">mathallenoslo.no →</a></div></div></div>
+      </div>
+    </div>
+
+    <div class="day-card" id="d_osl5">
+      <div class="day-hdr" onclick="td('d_osl5')">
+        <div class="day-num">9/14</div>
+        <div class="day-tb"><div class="day-title">Holmenkollen × 峽灣遊船</div><div class="day-sub">高處 + 水上，制霸奧斯陸</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Holmenkollen 滑雪博物館</div><div class="idesc">搭地鐵 T-bane 1 號線前往，登跳台俯瞰奧斯陸全景。門票 NOK 180</div><div class="tags"><span class="itag tm">博物館</span><a class="itag tlink" href="https://holmenkollen.com" target="_blank">holmenkollen.com →</a></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">阿克胡斯要塞 Akershus Festning</div><div class="idesc">13 世紀古堡，免費入場，峽灣視野絕佳</div><div class="tags"><span class="itag tf">免費</span></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div></div><div class="ibody"><div class="iname">奧斯陸峽灣遊船</div><div class="idesc">2 小時，從 Rådhusbrygga 碼頭出發。強烈推薦！記得帶外套，峽灣上很涼</div><div class="tags"><span class="itag tn">自然</span><a class="itag tlink" href="https://www.nyc.no/sightseeing" target="_blank">預訂遊船 →</a></div></div></div>
+      </div>
+    </div>
+
+    <div class="day-card" id="d_osl6">
+      <div class="day-hdr" onclick="td('d_osl6')">
+        <div class="day-num">9/15</div>
+        <div class="day-tb"><div class="day-title">Vettakollen 健行 + Grünerløkka 文青區</div><div class="day-sub">奧斯陸最後一天，好好享受</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Vettakollen 健行觀景</div><div class="idesc">搭地鐵 3 號線至 Vettakollen 站，20 分鐘登頂，360° 免費絕景</div><div class="tags"><span class="itag tf">免費</span><span class="itag tn">自然</span></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div></div><div class="ibody"><div class="iname">Grünerløkka 文青區</div><div class="idesc">咖啡廳、獨立書店、二手市集，奧斯陸最後晚餐首選</div><div class="tags"><span class="itag tfo">美食 × 逛街</span></div></div></div>
+      </div>
+    </div>
+
+    <div class="sec-label">前往斯德哥爾摩</div>
+    <div class="transport-card">
+      <div class="t-icon">🚆</div>
+      <div class="t-body">
+        <div class="t-route">奧斯陸 Oslo S → 斯德哥爾摩 Stockholm C</div>
+        <div class="t-detail">SJ 高速直達火車 · 約 5.5 小時 · 有餐車和免費 WiFi<br>越早訂越便宜，早鳥票從 SEK 295 (€25) 起</div>
+        <a class="t-link" href="https://www.sj.se" target="_blank">sj.se 訂票 →</a>
+      </div>
+      <div class="t-meta"><div class="t-time">約 5.5h</div><div class="t-date">9/16 早上出發</div></div>
+    </div>
+  </div>
+
+  <!-- ══ STOCKHOLM ══ -->
+  <div class="section" id="sec-sto">
+    <div class="city-hdr">
+      <div class="city-flag">🇸🇪</div>
+      <div class="city-hdr-body"><h2>斯德哥爾摩</h2><p>9/16 下午抵達 → 9/19 傍晚搭夜班渡輪離開 · 3 晚</p></div>
+      <span class="badge badge-transit">3.5 天</span>
+    </div>
+    <div class="alert alert-info">
+      <strong>💡 住宿建議：</strong>訂在 Gamla Stan 或 Södermalm 區，步行可達大多數景點。Stockholm Pass 包含 Vasa 博物館 + Skansen + ABBA 博物館，3 間以上就划算。
+    </div>
+
+    <div class="sec-label">行程</div>
+
+    <div class="day-card" id="d_sto1">
+      <div class="day-hdr" onclick="td('d_sto1')">
+        <div class="day-num">9/16</div>
+        <div class="day-tb"><div class="day-title">抵達 · Gamla Stan 舊城漫步</div><div class="day-sub">下午火車抵達</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">入住飯店</div><div class="idesc">Stockholm C 中央車站附近交通便利，或 Gamla Stan 步行範圍</div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Gamla Stan 舊城區</div><div class="idesc">中世紀鵝卵石巷弄、Stortorget 廣場、瑞典皇宮外觀</div><div class="tags"><span class="itag tf">免費散步</span></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div></div><div class="ibody"><div class="iname">Nobel 博物館</div><div class="idesc">諾貝爾獎歷史，就在舊城廣場正中央。門票 SEK 160</div><div class="tags"><span class="itag tm">博物館</span><a class="itag tlink" href="https://nobelprizemuseum.se" target="_blank">nobelprizemuseum.se →</a></div></div></div>
+      </div>
+    </div>
+
+    <div class="day-card" id="d_sto2">
+      <div class="day-hdr" onclick="td('d_sto2')">
+        <div class="day-num">9/17</div>
+        <div class="day-tb"><div class="day-title">Djurgården 島：Vasa 戰艦 + Skansen</div><div class="day-sub">搭 7 號電車或渡輪前往</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Vasa 戰艦博物館</div><div class="idesc">1628 年沉船完整保存，瑞典史上最尷尬也最迷人的故事。門票 SEK 190</div><div class="tags"><span class="itag tm">博物館</span><a class="itag tlink" href="https://vasamuseet.se" target="_blank">vasamuseet.se →</a></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Skansen 露天博物館</div><div class="idesc">北歐最古老開放式博物館，古建築 + 動物園。門票 SEK 250</div><div class="tags"><span class="itag tm">博物館</span><a class="itag tlink" href="https://skansen.se" target="_blank">skansen.se →</a></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div></div><div class="ibody"><div class="iname">Djurgården 島下午散步</div><div class="idesc">全島綠地公園，傍晚沿水邊漫步超放鬆</div><div class="tags"><span class="itag tn">自然</span><span class="itag tf">免費</span></div></div></div>
+      </div>
+    </div>
+
+    <div class="day-card" id="d_sto3">
+      <div class="day-hdr" onclick="td('d_sto3')">
+        <div class="day-num">9/18</div>
+        <div class="day-tb"><div class="day-title">ABBA 博物館 + 市政廳 + Södermalm</div><div class="day-sub">文化 × 夜生活</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">ABBA The Museum</div><div class="idesc">互動式展覽，可以「和 ABBA 一起現場演出」。建議提前網路購票！</div><div class="tags"><span class="itag tm">博物館</span><a class="itag tlink" href="https://abbathemuseum.com" target="_blank">abbathemuseum.com →</a></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">斯德哥爾摩市政廳 Stadshuset</div><div class="idesc">諾貝爾晚宴場地，塔樓俯瞰全城。需購票入場</div><div class="tags"><span class="itag tm">景點</span><a class="itag tlink" href="https://stadshuset.stockholm" target="_blank">stadshuset.stockholm →</a></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div></div><div class="ibody"><div class="iname">Södermalm 文青區</div><div class="idesc">北歐最潮街區，獨立咖啡廳、二手店、在地晚餐</div><div class="tags"><span class="itag tfo">美食 × 逛街</span></div></div></div>
+      </div>
+    </div>
+
+    <div class="day-card" id="d_sto4">
+      <div class="day-hdr" onclick="td('d_sto4')">
+        <div class="day-num">9/19</div>
+        <div class="day-tb"><div class="day-title">地鐵藝術館 + Fotografiska + 夜班渡輪出發</div><div class="day-sub">傍晚 16:30 搭渡輪</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">地鐵藝術館 Tunnelbana</div><div class="idesc">全世界最長藝術展覽，各站風格迥異。買一張單程票就能逛！完全免費拍照</div><div class="tags"><span class="itag tf">免費（含在交通票內）</span></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Fotografiska 攝影美術館</div><div class="idesc">世界級攝影展，頂樓景觀餐廳可俯瞰峽灣</div><div class="tags"><span class="itag tm">博物館</span><a class="itag tlink" href="https://www.fotografiska.com/sto" target="_blank">fotografiska.com →</a></div></div></div>
+        <div class="item"><div class="idc"><div class="idot gold"></div></div><div class="ibody"><div class="iname">夜班渡輪出發 → 哥本哈根</div><div class="idesc">DFDS 渡輪 · 約 16:30 出發，隔天早上抵達。有艙房省一晚旅館！在甲板上看群島日落絕景</div><div class="tags"><span class="itag tn">斯德哥爾摩群島</span><a class="itag tlink" href="https://www.dfds.com" target="_blank">dfds.com 訂票 →</a></div></div></div>
+      </div>
+    </div>
+
+    <div class="sec-label">前往哥本哈根</div>
+    <div class="transport-card">
+      <div class="t-icon">🚢</div>
+      <div class="t-body">
+        <div class="t-route">斯德哥爾摩 → 哥本哈根</div>
+        <div class="t-detail">DFDS 夜班渡輪 約 16:30 出發 → 隔天早上抵達，含艙房可省旅館費<br>或選擇 SJ 火車（約 5 小時，白天景色更佳）</div>
+        <a class="t-link" href="https://www.dfds.com" target="_blank">DFDS 渡輪訂票 →</a>
+        <a class="t-link" href="https://www.sj.se" target="_blank">SJ 火車 →</a>
+      </div>
+      <div class="t-meta"><div class="t-time">9/19 出發</div><div class="t-date">→ 9/20 抵達</div></div>
+    </div>
+  </div>
+
+  <!-- ══ COPENHAGEN ══ -->
+  <div class="section" id="sec-cph">
+    <div class="city-hdr">
+      <div class="city-flag">🇩🇰</div>
+      <div class="city-hdr-body"><h2>哥本哈根</h2><p>9/20 早上抵達 → 9/21 搭機回程 · 1.5 天</p></div>
+      <span class="badge badge-end">終點城市 ✈️</span>
+    </div>
+    <div class="alert alert-green">
+      <strong>✈️ 回程提醒：</strong>哥本哈根 → 赫爾辛基轉機 → 東京。機場搭地鐵 M2 約 15 分鐘。出發前請確認班機時間，建議提前 2.5–3 小時到機場。
+    </div>
+
+    <div class="sec-label">行程</div>
+
+    <div class="day-card" id="d_cph1">
+      <div class="day-hdr" onclick="td('d_cph1')">
+        <div class="day-num">9/20</div>
+        <div class="day-tb"><div class="day-title">渡輪抵達 · 全天哥本哈根</div><div class="day-sub">早上下船，入住放行李</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Nyhavn 彩色港口</div><div class="idesc">哥本哈根最具代表性的地標，運河邊散步打卡必去</div><div class="tags"><span class="itag tf">免費</span></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Tivoli 遊樂園</div><div class="idesc">1843 年開業，全球第二古老遊樂園。白天入場票 DKK 149</div><div class="tags"><span class="itag tm">景點</span><a class="itag tlink" href="https://www.tivoli.dk" target="_blank">tivoli.dk →</a></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Strøget 購物街</div><div class="idesc">北歐最長步行街，最後採買北歐紀念品、丹麥設計品</div><div class="tags"><span class="itag tfo">購物</span></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div></div><div class="ibody"><div class="iname">Meatpacking District 晚餐</div><div class="idesc">哥本哈根最潮餐廳區，旅程最後的道別大餐！</div><div class="tags"><span class="itag tfo">美食</span></div></div></div>
+      </div>
+    </div>
+
+    <div class="day-card" id="d_cph2">
+      <div class="day-hdr" onclick="td('d_cph2')">
+        <div class="day-num fly">9/21</div>
+        <div class="day-tb"><div class="day-title">早上市區 · 出發回家 ✈️</div><div class="day-sub">哥本哈根 CPH → 赫爾辛基 HEL → 東京 NRT / 台北 TPE</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">Rosenborg 城堡 & 國王花園</div><div class="idesc">17 世紀王室城堡，花園免費，城堡內部需購票</div><div class="tags"><span class="itag tf">花園免費</span></div></div></div>
+        <div class="item"><div class="idc"><div class="idot"></div><div class="iline"></div></div><div class="ibody"><div class="iname">最後一杯北歐精品咖啡</div><div class="idesc">哥本哈根是世界精品咖啡聖地，Coffee Collective 或 The Coffee Collective 必喝</div><div class="tags"><span class="itag tfo">美食</span></div></div></div>
+        <div class="item"><div class="idc"><div class="idot gold"></div></div><div class="ibody"><div class="iname">出發哥本哈根機場 CPH ✈️</div><div class="idesc">搭地鐵 M2 約 15 分鐘抵達機場。建議班機前 2.5–3 小時出發。朋友在此道別，各自回家！</div></div></div>
+      </div>
+    </div>
+
+    <div class="sec-label">回程交通</div>
+    <div class="transport-card">
+      <div class="t-icon">✈️</div>
+      <div class="t-body">
+        <div class="t-route">哥本哈根 CPH → 赫爾辛基 HEL → 東京 NRT</div>
+        <div class="t-detail">Finnair / SAS 直飛哥本哈根→赫爾辛基約 2.5 小時，每天 16 班以上<br>赫爾辛基轉機後飛東京</div>
+        <a class="t-link" href="https://www.finnair.com" target="_blank">Finnair →</a>
+        <a class="t-link" href="https://www.flysas.com" target="_blank">SAS →</a>
+      </div>
+      <div class="t-meta"><div class="t-time">9/21</div><div class="t-date">確認你的班機時間</div></div>
+    </div>
+  </div>
+
+  <!-- ══ BOOKING LIST ══ -->
+  <div class="section" id="sec-book">
+    <div class="alert alert-warn" style="margin-bottom:18px">
+      <strong>⚠️ 越早訂越好！</strong>北歐旅遊旺季，住宿和渡輪艙房很快售完。標示「最優先」的請這週就處理！
+    </div>
+
+    <div class="sec-label">🔴 最優先（越快越好）</div>
+    <div class="booking-grid">
+      <a class="booking-card bc-urgent" href="https://oslomaraton.no/en/registration" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🏃</div><div class="bc-name">奧斯陸半馬報名</div></div>
+        <div class="bc-desc">DNB Oslo Half Marathon 2026<br>半馬 700–900 NOK<br>9/12 出發</div>
+        <span class="bc-action">立刻報名 →</span>
+      </a>
+      <a class="booking-card bc-urgent" href="https://www.booking.com/city/no/oslo.html" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🏨</div><div class="bc-name">奧斯陸 9/13–9/16</div></div>
+        <div class="bc-desc">補訂 3 晚！<br>比賽週末旅館超搶手<br>建議市中心</div>
+        <span class="bc-action">搜尋住宿 →</span>
+      </a>
+    </div>
+
+    <div class="sec-label">🟡 交通（早訂早省）</div>
+    <div class="booking-grid">
+      <a class="booking-card" href="https://www.sj.se/en/home.html#/" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🚆</div><div class="bc-name">奧斯陸→斯德哥爾摩</div></div>
+        <div class="bc-desc">SJ 高速火車<br>約 5.5 小時直達<br>9/16 早上出發<br>早鳥票 SEK 295 起</div>
+        <span class="bc-action">sj.se 訂票 →</span>
+      </a>
+      <a class="booking-card" href="https://www.dfds.com/en-gb/passenger-ferries/stockholm-copenhagen" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🚢</div><div class="bc-name">斯德哥爾摩→哥本哈根</div></div>
+        <div class="bc-desc">DFDS 夜班渡輪<br>9/19 傍晚出發<br>省一晚旅館費！<br>艙房從 €60/人起</div>
+        <span class="bc-action">dfds.com 訂票 →</span>
+      </a>
+      <a class="booking-card" href="https://flytoget.no/en" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🚅</div><div class="bc-name">奧斯陸機場快線</div></div>
+        <div class="bc-desc">Flytoget<br>Oslo Airport → Oslo S<br>約 20 分鐘<br>NOK 198 單程</div>
+        <span class="bc-action">flytoget.no →</span>
+      </a>
+      <a class="booking-card" href="https://www.at.dk/en/journey-planner" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🚇</div><div class="bc-name">哥本哈根機場地鐵</div></div>
+        <div class="bc-desc">地鐵 M2<br>市中心 → CPH 機場<br>約 15 分鐘<br>DKK 36 單程</div>
+        <span class="bc-action">查詢路線 →</span>
+      </a>
+    </div>
+
+    <div class="sec-label">🏨 住宿</div>
+    <div class="booking-grid">
+      <a class="booking-card" href="https://www.booking.com/city/no/oslo.html" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🇳🇴</div><div class="bc-name">奧斯陸住宿</div></div>
+        <div class="bc-desc">建議 Sentrum（市中心）<br>9/10–9/13 已訂 ✓<br>9/13–9/16 需要補訂！</div>
+        <span class="bc-action">Booking.com →</span>
+      </a>
+      <a class="booking-card" href="https://www.booking.com/city/se/stockholm.html" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🇸🇪</div><div class="bc-name">斯德哥爾摩住宿</div></div>
+        <div class="bc-desc">建議 Gamla Stan<br>或 Södermalm 區<br>9/16–9/19（3晚）</div>
+        <span class="bc-action">Booking.com →</span>
+      </a>
+      <a class="booking-card" href="https://www.booking.com/city/dk/copenhagen.html" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🇩🇰</div><div class="bc-name">哥本哈根住宿</div></div>
+        <div class="bc-desc">9/20（1晚）<br>靠近市中心<br>Vesterbro 或 Indre By 區</div>
+        <span class="bc-action">Booking.com →</span>
+      </a>
+    </div>
+
+    <div class="sec-label">🎟 景點票（建議提前購買）</div>
+    <div class="booking-grid">
+      <a class="booking-card" href="https://www.visitoslo.com/en/activities-and-attractions/oslo-pass/" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🎫</div><div class="bc-name">Oslo Pass</div></div>
+        <div class="bc-desc">包含交通 + 30+ 博物館<br>24h NOK 580<br>參觀 2–3 間即回本</div>
+        <span class="bc-action">visitoslo.com →</span>
+      </a>
+      <a class="booking-card" href="https://www.stockholmpass.com" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🎫</div><div class="bc-name">Stockholm Pass</div></div>
+        <div class="bc-desc">含 Vasa + Skansen<br>+ ABBA 博物館等<br>1日 SEK 809 起</div>
+        <span class="bc-action">stockholmpass.com →</span>
+      </a>
+      <a class="booking-card" href="https://abbathemuseum.com/en/plan-your-visit/tickets/" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🎵</div><div class="bc-name">ABBA The Museum</div></div>
+        <div class="bc-desc">斯德哥爾摩必去<br>建議提前網購<br>SEK 295</div>
+        <span class="bc-action">購票 →</span>
+      </a>
+      <a class="booking-card" href="https://www.tivoli.dk/en/tickets" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🎡</div><div class="bc-name">Tivoli 遊樂園</div></div>
+        <div class="bc-desc">哥本哈根必去<br>入場票 DKK 149<br>9/20 下午</div>
+        <span class="bc-action">tivoli.dk →</span>
+      </a>
+      <a class="booking-card" href="https://www.munch.no/en/visit/tickets/" target="_blank">
+        <div class="bc-top"><div class="bc-icon">😱</div><div class="bc-name">孟克美術館</div></div>
+        <div class="bc-desc">《吶喊》真跡<br>NOK 200<br>建議網路購票</div>
+        <span class="bc-action">munch.no →</span>
+      </a>
+      <a class="booking-card" href="https://frammuseum.no/visit/tickets/" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🚢</div><div class="bc-name">法蘭號博物館</div></div>
+        <div class="bc-desc">登上極地探險船<br>NOK 220<br>Bygdøy 半島</div>
+        <span class="bc-action">frammuseum.no →</span>
+      </a>
+    </div>
+
+    <div class="sec-label">📱 實用 App</div>
+    <div class="booking-grid">
+      <a class="booking-card" href="https://www.ruter.no/en/journey-planner/" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🚌</div><div class="bc-name">Ruter（奧斯陸）</div></div>
+        <div class="bc-desc">奧斯陸大眾交通 App<br>地鐵、公車、渡輪<br>買票 + 查路線</div>
+        <span class="bc-action">ruter.no →</span>
+      </a>
+      <a class="booking-card" href="https://sl.se/en" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🚇</div><div class="bc-name">SL（斯德哥爾摩）</div></div>
+        <div class="bc-desc">斯德哥爾摩大眾運輸<br>含地鐵藝術館路線<br>下載 SL-Appen</div>
+        <span class="bc-action">sl.se →</span>
+      </a>
+      <a class="booking-card" href="https://www.google.com/maps" target="_blank">
+        <div class="bc-top"><div class="bc-icon">🗺️</div><div class="bc-name">Google Maps</div></div>
+        <div class="bc-desc">出發前下載離線地圖<br>三個城市都下載好<br>省流量又方便</div>
+        <span class="bc-action">提前下載離線圖</span>
+      </a>
+      <a class="booking-card" href="https://www.xe.com" target="_blank">
+        <div class="bc-top"><div class="bc-icon">💱</div><div class="bc-name">匯率換算</div></div>
+        <div class="bc-desc">NOK 挪威克朗<br>SEK 瑞典克朗<br>DKK 丹麥克朗</div>
+        <span class="bc-action">xe.com →</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══ PREP CHECKLIST ══ -->
+  <div class="section" id="sec-prep">
+    <div class="progress-wrap">
+      <div class="progress-label"><span>準備進度</span><span id="prog-text">0 / 0</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="weather-row">
+      <div class="weather-card">
+        <div class="weather-city">🇳🇴 奧斯陸</div>
+        <div class="weather-icon">🌤</div>
+        <div class="weather-temp">10–16°C</div>
+        <div class="weather-desc">涼爽，可能下雨</div>
+      </div>
+      <div class="weather-card">
+        <div class="weather-city">🇸🇪 斯德哥爾摩</div>
+        <div class="weather-icon">⛅</div>
+        <div class="weather-temp">11–17°C</div>
+        <div class="weather-desc">秋意漸濃</div>
+      </div>
+      <div class="weather-card">
+        <div class="weather-city">🇩🇰 哥本哈根</div>
+        <div class="weather-icon">🌥</div>
+        <div class="weather-temp">12–17°C</div>
+        <div class="weather-desc">多雲，帶外套</div>
+      </div>
+    </div>
+
+    <div class="day-card open" id="cl_ticket">
+      <div class="day-hdr" onclick="td('cl_ticket')">
+        <div class="day-num" style="font-size:18px">🎟</div>
+        <div class="day-tb"><div class="day-title">訂票 & 報名</div><div class="day-sub">越早越好</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <ul class="checklist" id="cl_ticket_list">
+          <li><input type="checkbox" id="c1" onchange="updateProg()"><label for="c1">奧斯陸半馬報名 oslomaraton.no<span>半馬 700–900 NOK，確認名額</span></label></li>
+          <li><input type="checkbox" id="c2" onchange="updateProg()"><label for="c2">補訂奧斯陸 9/13–9/16 住宿（3晚）<span>比賽週末旅館超搶手！</span></label></li>
+          <li><input type="checkbox" id="c3" onchange="updateProg()"><label for="c3">訂斯德哥爾摩住宿 9/16–9/19（3晚）<span>建議 Gamla Stan 或 Södermalm</span></label></li>
+          <li><input type="checkbox" id="c4" onchange="updateProg()"><label for="c4">訂哥本哈根住宿 9/20（1晚）<span>Vesterbro 或 Indre By 區</span></label></li>
+          <li><input type="checkbox" id="c5" onchange="updateProg()"><label for="c5">訂 SJ 火車：奧斯陸→斯德哥爾摩 9/16 sj.se<span>越早訂越便宜，早鳥票 SEK 295 起</span></label></li>
+          <li><input type="checkbox" id="c6" onchange="updateProg()"><label for="c6">訂 DFDS 渡輪：斯德哥爾摩→哥本哈根 9/19 dfds.com<span>夜班渡輪，含艙房省一晚旅館費</span></label></li>
+          <li><input type="checkbox" id="c7" onchange="updateProg()"><label for="c7">確認哥本哈根→赫爾辛基→東京回程班機<span>確認轉機時間足夠（建議 2 小時以上）</span></label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day-card" id="cl_docs">
+      <div class="day-hdr" onclick="td('cl_docs')">
+        <div class="day-num" style="font-size:18px">📄</div>
+        <div class="day-tb"><div class="day-title">證件 & 文件</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <ul class="checklist">
+          <li><input type="checkbox" id="c8" onchange="updateProg()"><label for="c8">護照有效期限確認（至少剩 6 個月）<span>日本、台灣護照進入申根區免簽</span></label></li>
+          <li><input type="checkbox" id="c9" onchange="updateProg()"><label for="c9">列印 / 截圖所有訂房確認信<span>飯店 check-in 時可能需要</span></label></li>
+          <li><input type="checkbox" id="c10" onchange="updateProg()"><label for="c10">列印 / 截圖火車票和渡輪票<span>SJ 和 DFDS 可用手機 QR Code</span></label></li>
+          <li><input type="checkbox" id="c11" onchange="updateProg()"><label for="c11">旅遊保險購買<span>建議含醫療、行李遺失、取消保障</span></label></li>
+          <li><input type="checkbox" id="c12" onchange="updateProg()"><label for="c12">信用卡確認可在歐洲使用（通知銀行出國）<span>Visa / Mastercard 普遍接受，北歐幾乎全刷卡</span></label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day-card" id="cl_race">
+      <div class="day-hdr" onclick="td('cl_race')">
+        <div class="day-num" style="font-size:18px">🏃</div>
+        <div class="day-tb"><div class="day-title">半馬比賽準備</div><div class="day-sub">9/12 DNB Oslo Half Marathon</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <ul class="checklist">
+          <li><input type="checkbox" id="c13" onchange="updateProg()"><label for="c13">跑鞋 — 已穿合腳的舊鞋，不要穿新鞋<span>路線平坦，一般路跑鞋即可</span></label></li>
+          <li><input type="checkbox" id="c14" onchange="updateProg()"><label for="c14">跑步服裝（含備用一套）<span>9 月奧斯陸約 10–14°C，可穿輕薄長袖</span></label></li>
+          <li><input type="checkbox" id="c15" onchange="updateProg()"><label for="c15">能量補給：能量膠 / 運動水壺<span>比賽每 5km 有補給站，提供水和運動飲料</span></label></li>
+          <li><input type="checkbox" id="c16" onchange="updateProg()"><label for="c16">確認號碼布領取時間<span>9/10、9/11 可提前領，或 9/12 當天 07:00–08:00</span></label></li>
+          <li><input type="checkbox" id="c17" onchange="updateProg()"><label for="c17">比賽前一天放鬆行程，避免太多走路<span>Bygdøy 博物館後注意腳的狀況</span></label></li>
+          <li><input type="checkbox" id="c18" onchange="updateProg()"><label for="c18">安排行李寄放（比賽當天）<span>比賽現場有 bag drop 服務，可寄放背包</span></label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day-card" id="cl_pack">
+      <div class="day-hdr" onclick="td('cl_pack')">
+        <div class="day-num" style="font-size:18px">🎒</div>
+        <div class="day-tb"><div class="day-title">行李打包</div><div class="day-sub">北歐秋季建議清單</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <ul class="checklist">
+          <li><input type="checkbox" id="c19" onchange="updateProg()"><label for="c19">防風外套 / 薄羽絨<span>峽灣遊船和戶外景點必備，9月北歐早晚很涼</span></label></li>
+          <li><input type="checkbox" id="c20" onchange="updateProg()"><label for="c20">輕便折疊傘或防水外套<span>秋天容易下雨</span></label></li>
+          <li><input type="checkbox" id="c21" onchange="updateProg()"><label for="c21">舒適步行鞋（非跑鞋）<span>北歐城市石板路很多，避免跑鞋以外還要走很多路</span></label></li>
+          <li><input type="checkbox" id="c22" onchange="updateProg()"><label for="c22">萬用轉接頭（歐規 Type C）<span>挪威、瑞典、丹麥都是 Type C/F 插頭</span></label></li>
+          <li><input type="checkbox" id="c23" onchange="updateProg()"><label for="c23">行動電源<span>一天在外跑行程很耗電，建議 10000mAh 以上</span></label></li>
+          <li><input type="checkbox" id="c24" onchange="updateProg()"><label for="c24">國際漫遊或買當地 SIM 卡<span>奧斯陸機場可購 SIM，或台灣出發前買歐洲卡</span></label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day-card" id="cl_money">
+      <div class="day-hdr" onclick="td('cl_money')">
+        <div class="day-num" style="font-size:18px">💰</div>
+        <div class="day-tb"><div class="day-title">金錢 & 費用參考</div><div class="day-sub">北歐物價偏高，心裡有個底</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <ul class="checklist">
+          <li><input type="checkbox" id="c25" onchange="updateProg()"><label for="c25">準備信用卡（北歐幾乎不用現金）<span>絕大多數地方刷卡，甚至路邊攤都可以</span></label></li>
+          <li><input type="checkbox" id="c26" onchange="updateProg()"><label for="c26">預算抓好：餐飲每天 NOK 500–800（約 €45–70）<span>午餐 dagens 特餐 NOK 120–150；晚餐中高檔 500–800</span></label></li>
+          <li><input type="checkbox" id="c27" onchange="updateProg()"><label for="c27">Oslo Pass、Stockholm Pass 評估是否購買<span>參觀 3 間以上博物館即回本</span></label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day-card" id="cl_app">
+      <div class="day-hdr" onclick="td('cl_app')">
+        <div class="day-num" style="font-size:18px">📱</div>
+        <div class="day-tb"><div class="day-title">出發前下載的 App</div></div>
+        <div class="day-chev">⌄</div>
+      </div>
+      <div class="day-items">
+        <ul class="checklist">
+          <li><input type="checkbox" id="c28" onchange="updateProg()"><label for="c28">Google Maps — 提前下載奧斯陸、斯德哥爾摩、哥本哈根離線地圖<span>在飯店 WiFi 下載，出去就不用耗流量</span></label></li>
+          <li><input type="checkbox" id="c29" onchange="updateProg()"><label for="c29">Ruter（奧斯陸大眾交通 App）<span>買票 + 查路線，可用信用卡</span></label></li>
+          <li><input type="checkbox" id="c30" onchange="updateProg()"><label for="c30">SL-Appen（斯德哥爾摩交通）<span>地鐵、公車、渡輪一卡通</span></label></li>
+          <li><input type="checkbox" id="c31" onchange="updateProg()"><label for="c31">Rejseplanen（哥本哈根交通）<span>丹麥大眾運輸查詢</span></label></li>
+          <li><input type="checkbox" id="c32" onchange="updateProg()"><label for="c32">Google Translate — 下載挪威文、瑞典文、丹麥文離線包<span>雖然北歐人英文很好，但拍照翻譯菜單很方便</span></label></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function switchTab(city) {
+  var tabs = document.getElementsByClassName('tab-btn');
+  var sections = document.getElementsByClassName('section');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove('active');
+  }
+  for (var i = 0; i < sections.length; i++) {
+    sections[i].classList.remove('active');
+  }
+  var activeSection = document.getElementById('sec-' + city);
+  if (activeSection) activeSection.classList.add('active');
+  var activeBtns = document.querySelectorAll('[data-tab="' + city + '"]');
+  if (activeBtns.length > 0) {
+    activeBtns[0].classList.add('active');
+    activeBtns[0].scrollIntoView({ inline: 'center', block: 'nearest' });
+  }
+  window.scrollTo(0, 0);
+}
+
+function td(id) {
+  var card = document.getElementById(id);
+  if (card) card.classList.toggle('open');
+}
+
+function updateProg() {
+  var all = document.querySelectorAll('#sec-prep input[type="checkbox"]');
+  var done = document.querySelectorAll('#sec-prep input[type="checkbox"]:checked');
+  var pct = all.length ? Math.round(done.length / all.length * 100) : 0;
+  var fill = document.getElementById('prog-fill');
+  var text = document.getElementById('prog-text');
+  if (fill) fill.style.width = pct + '%';
+  if (text) text.textContent = done.length + ' / ' + all.length;
+  for (var i = 0; i < all.length; i++) {
+    var li = all[i].closest('li');
+    if (li) li.classList.toggle('cl-done', all[i].checked);
+  }
+  try {
+    var vals = [];
+    for (var i = 0; i < all.length; i++) vals.push(all[i].checked);
+    localStorage.setItem('nordic_checks', JSON.stringify(vals));
+  } catch(e) {}
+}
+
+function loadChecks() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('nordic_checks') || '[]');
+    var all = document.querySelectorAll('#sec-prep input[type="checkbox"]');
+    for (var i = 0; i < all.length; i++) {
+      if (saved[i]) all[i].checked = true;
+    }
+    updateProg();
+  } catch(e) {}
+}
+
+window.onscroll = function() {
+  var btn = document.getElementById('scrollTop');
+  if (btn) btn.classList.toggle('show', window.scrollY > 300);
+};
+
+// Tab click — attach after DOM ready
+window.onload = function() {
+  var tabRow = document.querySelector('.tab-row');
+  if (tabRow) {
+    tabRow.onclick = function(e) {
+      var btn = e.target;
+      while (btn && btn !== tabRow) {
+        if (btn.getAttribute('data-tab')) {
+          switchTab(btn.getAttribute('data-tab'));
+          return;
+        }
+        btn = btn.parentElement;
+      }
+    };
+  }
+  loadChecks();
+};
+</script>
+</body>
+</html>
